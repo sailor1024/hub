@@ -1,245 +1,186 @@
 package cn.edu.gdmec.android.boxuegu.activity;
 
-
-import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
-import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.view.KeyEvent;
+import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import cn.edu.gdmec.android.boxuegu.R;
-import cn.edu.gdmec.android.boxuegu.view.ExercisesView;
+import cn.edu.gdmec.android.boxuegu.bean.UserBean;
+import cn.edu.gdmec.android.boxuegu.utils.AnalysisUtils;
+import cn.edu.gdmec.android.boxuegu.utils.DBUtils;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-
-//    视图
-    private ExercisesView mExercisesView;
-    private FrameLayout mBodyLayout;
-    public LinearLayout mBottomLayout;
+public class UserInfoActivity extends AppCompatActivity implements View.OnClickListener{
 
 
-    private View mCourseBtn;
-    private View mExercisesBtn;
-    private View mMyInfoBtn;
-
-    private TextView tv_course;
-    private TextView tv_exercises;
-    private TextView tv_myInfo;
-
-    private ImageView iv_course;
-    private ImageView iv_exercises;
-    private ImageView iv_myInfo;
-
+    private String spUserName;
     private TextView tv_back;
     private TextView tv_main_title;
-
     private RelativeLayout rl_title_bar;
-
+    private RelativeLayout rl_nickName;
+    private RelativeLayout rl_sex;
+    private RelativeLayout rl_signature;
+    private TextView tv_nickName;
+    private TextView tv_user_name;
+    private TextView tv_sex;
+    private TextView tv_signature;
+    private UserBean value;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_user_info);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        spUserName = AnalysisUtils.readLoginUserName(this);
         init();
-        initBottomBar();
+        initData();
         setListener();
-        setInitStatus();
-
     }
-
-
 
     private void init() {
         tv_back = (TextView) findViewById(R.id.tv_back);
         tv_main_title = (TextView) findViewById(R.id.tv_main_title);
-        tv_main_title.setText("博学谷课程");
+        tv_main_title.setText("个人资料");
         rl_title_bar = (RelativeLayout) findViewById(R.id.title_bar);
         rl_title_bar.setBackgroundColor(Color.parseColor("#30B4FF"));
-        tv_back.setVisibility(View.GONE);
-        initBodyLayout();
+        rl_nickName = (RelativeLayout) findViewById(R.id.rl_nickName);
+        rl_sex = (RelativeLayout) findViewById(R.id.rl_sex);
+        rl_signature = (RelativeLayout) findViewById(R.id.rl_signature);
+        tv_nickName = (TextView) findViewById(R.id.tv_nickName);
+        tv_user_name = (TextView) findViewById(R.id.tv_user_name);
+        tv_sex = (TextView) findViewById(R.id.tv_sex);
+        tv_signature = (TextView) findViewById(R.id.tv_signature);
+    }
+
+    private void initData() {
+        UserBean bean = null;
+        bean = DBUtils.getInstance(this).getUserInfo(spUserName);
+        if (bean == null) {
+            bean = new UserBean();
+            bean.userName = spUserName;
+            bean.nickName = "问答精灵";
+            bean.sex = "男";
+            bean.signature = "问答精灵";
+            DBUtils.getInstance(this).saveUserInfo(bean);
+        }
+        setValue(bean);
+    }
+    private void setValue(UserBean bean) {
+        tv_nickName.setText(bean.nickName);
+        tv_user_name.setText(bean.userName);
+        tv_sex.setText(bean.sex);
+        tv_signature.setText(bean.signature);
+    }
+    private void setListener() {
+        tv_back.setOnClickListener(this);
+        rl_nickName.setOnClickListener(this);
+        rl_sex.setOnClickListener(this);
+        rl_signature.setOnClickListener(this);
     }
 
 
-    private void initBottomBar() {
-        mBottomLayout = (LinearLayout) findViewById(R.id.main_bottom_bar);
-        mCourseBtn = findViewById(R.id.bottm_bar_course_btn);
-        mExercisesBtn = findViewById(R.id.bottm_bar_exercises_btn);
-        mMyInfoBtn = findViewById(R.id.bottm_bar_myinfo_btn);
 
-        tv_course = (TextView) findViewById(R.id.bottom_bar_text_course);
-        tv_exercises = (TextView) findViewById(R.id.bottom_bar_text_exercises);
-        tv_myInfo = (TextView) findViewById(R.id.bottom_bar_text_myinfo);
-
-        iv_course = (ImageView) findViewById(R.id.bottom_bar_image_course);
-        iv_exercises = (ImageView) findViewById(R.id.bottom_bar_image_exercises);
-        iv_myInfo = (ImageView) findViewById(R.id.bottom_bar_image_myinfo);
-    }
-    private void initBodyLayout() {
-         mBodyLayout = (FrameLayout) findViewById(R.id.main_body);
-    }
 
 
     @Override
     public void onClick(View v) {
-    switch (v.getId()){
-        case R.id.bottm_bar_course_btn:
-            clearBottomImageState();
-            selectDisplayView(0);
-            break;
-        case R.id.bottm_bar_exercises_btn:
-            clearBottomImageState();
-            selectDisplayView(1);
-            break;
-        case R.id.bottm_bar_myinfo_btn:
-            clearBottomImageState();
-            selectDisplayView(2);
-            break;
-        default:
-            break;
-
-    }
-    }
-
-
-
-    private void setListener() {
-        for (int i = 0; i< mBottomLayout.getChildCount(); i++){
-            mBottomLayout.getChildAt(i).setOnClickListener(this);
-        }
-    }
-    private void clearBottomImageState() {
-        tv_course.setTextColor(Color.parseColor("#666666"));
-        tv_exercises.setTextColor(Color.parseColor("#666666"));
-        tv_myInfo.setTextColor(Color.parseColor("#666666"));
-        iv_course.setImageResource(R.drawable.main_course_icon);
-        iv_exercises.setImageResource(R.drawable.main_exercises_icon);
-        iv_myInfo.setImageResource(R.drawable.main_my_icon);
-        for (int i = 0; i<mBottomLayout.getChildCount();i++){
-            mBottomLayout.getChildAt(i).setSelected(false);
-        }
-    }
-    private void setSelectedStatus(int index) {
-        switch (index){
-            case 0:
-                mCourseBtn.setSelected(true);
-                iv_course.setImageResource(R.drawable.main_course_icon_selected);
-                tv_course.setTextColor(Color.parseColor("#0097F7"));
-                rl_title_bar.setVisibility(View.VISIBLE);
-                tv_main_title.setText("博学谷课程");
+        switch (v.getId()){
+            case R.id.tv_back:
+                this.finish();
                 break;
-            case 1:
-                mExercisesBtn.setSelected(true);
-                iv_exercises
-                        .setImageResource(R.drawable.main_course_icon_selected);
-                tv_exercises.setTextColor(Color.parseColor("#0097F7"));
-                rl_title_bar.setVisibility(View.VISIBLE);
-                tv_main_title.setText("博学谷习题");
+            case R.id.rl_nickName:
+                String name = tv_nickName.getText().toString();
+                Bundle bdName = new Bundle();
+                bdName.putString("content",name);
+                bdName.putString("title","昵称");
+                bdName.putInt("flag",1);
+                enterActivityForResult(ChangeUserInfoActivity.class,CHANGE_NICKNAME,bdName);
                 break;
-            case 2:
-                mMyInfoBtn.setSelected(true);
-                iv_myInfo
-                        .setImageResource(R.drawable.main_course_icon_selected);
-                tv_myInfo.setTextColor(Color.parseColor("#0097F7"));
-                rl_title_bar.setVisibility(View.GONE);
-        }
-    }
-    private void removeAllView(){
-        for (int i = 0; i<mBottomLayout.getChildCount();i++){
-            mBodyLayout.getChildAt(i).setVisibility(View.GONE);
-        }
-    }
-    private void setInitStatus(){
-        clearBottomImageState();
-        setSelectedStatus(0);
-        createView(0);
-
-    }
-
-    /*public void setSelectedStatus(int index) {
-        removeAllView();
-        createView(0);
-        setSelectedStatus(index);
-    }*/
-
-    private void selectDisplayView(int index) {
-        removeAllView();
-        createView(index);
-        setSelectedStatus(index);
-    }
-
-    private void createView(int viewIndex) {
-        switch (viewIndex){
-            case 0:
+            case R.id.rl_sex:
+                String sex = tv_sex.getText().toString();
+                sexDialog(sex);
                 break;
-            case 1:
-                if (mExercisesView == null) {
-                    mExercisesView = new ExercisesView(this);
-                    mBodyLayout.addView(mExercisesView.getView());
-                }else {
-                    mExercisesView.getView();
-                }
-                mExercisesView.showView();
+            case R.id.rl_signature:
+                String signature = tv_signature.getText().toString();
+                Bundle bdSignature = new Bundle();
+                bdSignature.putString("content",signature);
+                bdSignature.putString("title","签名");
+                bdSignature.putInt("flag",2);
+                enterActivityForResult(ChangeUserInfoActivity.class,CHANGE_SIGNATURE,bdSignature);
                 break;
-            case 2:
+            default:
                 break;
         }
     }
+    private void sexDialog(String sex){
+        int sexFlag = 0;
+        if ("男".equals(sex)){
+            sexFlag=0;
+        }else if("女".equals(sex)){
+            sexFlag=1;
+        }
+        final String items[]={"男","女"};
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("性别");
+        builder.setSingleChoiceItems(items, sexFlag, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int i) {
+                dialog.dismiss();
+                Toast.makeText(UserInfoActivity.this,items[i],Toast.LENGTH_SHORT).show();
+                setSex(items[i]);
+            }
+        });
+        builder.create().show();
+    }
+
+    private void setSex(String sex){
+        tv_sex.setText(sex);
+        DBUtils.getInstance(UserInfoActivity.this).updateUserInfo("sex",sex,spUserName);
+    }
+
+    private String new_info;
+
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (data!=null){
-            boolean isLogin=data.getBooleanExtra("isLogin",false);
-            if (isLogin){
-                clearBottomImageState();
-                selectDisplayView(0);
-
-            }
-        }
-    }
-    protected long exitTime;
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event){
-        if (keyCode == KeyEvent.KEYCODE_BACK
-                && event.getAction() == KeyEvent.ACTION_DOWN  ){
-            if ((System.currentTimeMillis()- exitTime)>2000) {
-                exitTime = System.currentTimeMillis();
-            }else {
-                MainActivity.this.finish();
-                if (readLoginStatus()){
-                    clearLoginStatus();
-
+        switch (requestCode){
+            case CHANGE_NICKNAME:
+                if (data != null){
+                    new_info = data.getStringExtra("nickName");
+                    if (TextUtils.isEmpty(new_info)||new_info==null){
+                        return;
+                    }
+                    tv_nickName.setText(new_info);
+                    DBUtils.getInstance(UserInfoActivity.this).updateUserInfo(
+                            "nickName",new_info,spUserName
+                    );
                 }
-                System.exit(0);
-            }
-            return  true;
+                break;
+            case CHANGE_SIGNATURE:
+                if (data != null){
+                    new_info = data.getStringExtra("signature");
+                    if (TextUtils.isEmpty(new_info)||new_info==null){
+                        return;
+                    }
+                    tv_signature.setText(new_info);
+                    DBUtils.getInstance(UserInfoActivity.this).updateUserInfo(
+                            "signature",new_info,spUserName
+                    );
+                }
+                break;
         }
-        return super.onKeyDown(keyCode, event);
     }
-
-    private boolean readLoginStatus() {
-        SharedPreferences sp = getSharedPreferences("LoginInfo",
-                Context.MODE_PRIVATE);
-        boolean isLogin = sp.getBoolean("isLogin",false);
-        return isLogin;
+    public void enterActivityForResult(Class<?> to,int requestCode,Bundle b){
+        Intent i = new Intent(this,to);
+        i.putExtras(b);
+        startActivityForResult(i,requestCode);
     }
-    private void clearLoginStatus(){
-        SharedPreferences sp = getSharedPreferences("LoginInfo",
-                Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sp.edit();
-        editor.putBoolean("isLogin",false);
-        editor.putString("loginUserName","");
-        editor.commit();
-    }
-
 }
