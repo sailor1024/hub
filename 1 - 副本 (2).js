@@ -1,191 +1,255 @@
-package cn.edu.gdmec.android.testboxuegu.view;
+package cn.edu.gdmec.android.testboxuegu.activity;
 
-import android.app.Activity;
-import android.os.Handler;
-import android.os.Message;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.view.ViewPager;
-import android.util.DisplayMetrics;
-import android.view.Display;
-import android.view.LayoutInflater;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
+import android.graphics.Color;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ListView;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import cn.edu.gdmec.android.testboxuegu.R;
-import cn.edu.gdmec.android.testboxuegu.adapter.AdBannerAdapter;
-import cn.edu.gdmec.android.testboxuegu.adapter.CourseAdapter;
-import cn.edu.gdmec.android.testboxuegu.bean.CourseBean;
-import cn.edu.gdmec.android.testboxuegu.utils.AnalysisUtils;
+import cn.edu.gdmec.android.testboxuegu.view.CourseView;
+import cn.edu.gdmec.android.testboxuegu.view.ExerciseView;
+import cn.edu.gdmec.android.testboxuegu.view.MyInfoView;
 
-/**
- * Created by student on 17/12/27.
- */
+public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
-public class CourseView {
+    private ExerciseView mExerciseView;
+    private CourseView mCourseView;
+    private MyInfoView mMyInfoView;
+    private FrameLayout mBodyLayout;
+    private LinearLayout mBottomLayout;
 
-    private ListView lv_list;
-    private CourseAdapter adapter;
-    private List<List<CourseBean>> cbl;
-    private FragmentActivity mContext;
-    private LayoutInflater mInflater;
-    private View mCurrentView;
-    private ViewPager adPager;
-    private View adBannerLay;
-    private AdBannerAdapter ada;
-    public static final int MSG_AD_SLID = 002;
-    private ViewPagerIndicator vpi;
-    private MHandler mHandler;
-    private List<CourseBean> cadl;
+    private View mCourseBtn;
+    private View mExercisesBtn;
+    private View mMyInfoBtn;
+    private TextView tv_course;
+    private TextView tv_exercises;
+    private TextView tv_myInfo;
+    private ImageView iv_course;
+    private ImageView iv_exercises;
+    private ImageView iv_myInfo;
+    private TextView tv_back;
+    private TextView tv_main_title;
+    private RelativeLayout rl_title_bar;
 
-    public CourseView(FragmentActivity context){
-        mContext = context;
-        mInflater = LayoutInflater.from(mContext);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        init();
+        initBottomBar();
+        setListener();
+        setInitStatus();
+    }
+    private void init() {
+     tv_back = (TextView)findViewById(R.id.tv_back);
+        tv_main_title = (TextView) findViewById(R.id.tv_main_title);
+        tv_main_title.setText("博学谷课程");
+        rl_title_bar = (RelativeLayout)findViewById(R.id.title_bar);
+        rl_title_bar.setBackgroundColor(Color.parseColor("#30B4FF"));
+        tv_back.setVisibility(View.GONE);
+        initBodyLayout();
+    }
+    private void initBottomBar() {
+        mBottomLayout = (LinearLayout) findViewById(R.id.main_bottom_bar);
+        mCourseBtn=findViewById(R.id.bottom_bar_course_btn);
+        mExercisesBtn= findViewById(R.id.bottom_bar_exercises_btn);
+        mMyInfoBtn = findViewById(R.id.bottom_bar_myinfo_btn);
+        tv_course=(TextView)findViewById(R.id.bottom_bar_text_course);
+        tv_exercises=(TextView)findViewById(R.id.bottom_bar_text_exercises);
+        tv_myInfo = (TextView)findViewById(R.id.bottom_bar_text_myinfo);
+        iv_course =(ImageView)findViewById(R.id.bottom_bar_image_course);
+        iv_exercises= (ImageView)findViewById(R.id.bottom_bar_image_exercises);
+        iv_myInfo= (ImageView)findViewById(R.id.bottom_bar_image_myinfo);
+
+    }
+    private void initBodyLayout() {
+        mBodyLayout = (FrameLayout) findViewById(R.id.main_body);
     }
 
-    private void createView() {
-        mHandler = new MHandler();
-        initAdData();
-        getCourseData();
-        initView();
-        new AdAutoSlidThread().start();
-    }
-
-
-
-    class MHandler extends Handler{
-        @Override
-        public void dispatchMessage(Message msg) {
-            super.dispatchMessage(msg);
-            switch (msg.what){
-                case MSG_AD_SLID:
-                    if (ada.getCount()>0){
-                        adPager.setCurrentItem(adPager.getCurrentItem()+1);
-                    }
-                    break;
-            }
-        }
-    }
-    class AdAutoSlidThread extends Thread{
-        @Override
-        public void run() {
-            super.run();
-            while (true){
-                try {
-                    sleep(5000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+    @Override
+    public void onClick(View v){
+        switch (v.getId()){
+            case R.id.bottom_bar_course_btn:
+                clearBottomImageState();
+                selectDisplayView(0);
+                break;
+            case R.id.bottom_bar_exercises_btn:
+                clearBottomImageState();
+                selectDisplayView(1);
+                break;
+            case R.id.bottom_bar_myinfo_btn:
+                clearBottomImageState();
+                selectDisplayView(2);
+                if (mMyInfoView != null){
+                    mMyInfoView.setLoginParams(readLoginStatus());
                 }
-                if (mHandler != null)
-                    mHandler.sendEmptyMessage(MSG_AD_SLID);
-            }
+                break;
+            default:
+                break;
+        }
+    }
+    private void setListener() {
+        for (int i = 0; i < mBottomLayout.getChildCount();i++){
+            mBottomLayout.getChildAt(i).setOnClickListener(this);
         }
     }
 
-    private void initView(){
-        mCurrentView = mInflater.inflate(R.layout.main_view_course,null);
-        lv_list = (ListView)mCurrentView.findViewById(R.id.lv_list);
-        adapter = new CourseAdapter(mContext);
-        adapter.setData(cbl);
-        lv_list.setAdapter(adapter);
-        adPager = (ViewPager)mCurrentView.findViewById(R.id.vp_advertBanner);
-        adPager.setLongClickable(false);
-        ada = new AdBannerAdapter(mContext.getSupportFragmentManager(),mHandler);
-        adPager.setAdapter(ada);
-        adPager.setOnTouchListener(ada);
-        vpi = (ViewPagerIndicator)mCurrentView.findViewById(R.id.vpi_advert_indicator);
-        vpi.setCount(ada.getSize());
-        adBannerLay = mCurrentView.findViewById(R.id.rl_adBanner);
-        adPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener( ) {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+    private void clearBottomImageState() {
+        tv_course.setTextColor(Color.parseColor("#666666"));
+        tv_exercises.setTextColor(Color.parseColor("#666666"));
+        tv_myInfo.setTextColor(Color.parseColor("#666666"));
+        iv_course.setImageResource(R.drawable.main_course_icon);
+        iv_exercises.setImageResource(R.drawable.main_exercises_icon);
+        iv_myInfo.setImageResource(R.drawable.main_my_icon);
+        for (int i=0;i<mBottomLayout.getChildCount();i++){
+            mBottomLayout.getChildAt(i).setSelected(false);
+        }
+    }
 
-            }
+    public void setSelectedStatus(int index){
+        switch (index){
+            case 0:
+                mCourseBtn.setSelected(true);
+                iv_course.setImageResource(R.drawable.main_course_icon_selected);
+                tv_course.setTextColor(Color.parseColor("#0097F7"));
+                rl_title_bar.setVisibility(View.VISIBLE);
+                tv_main_title.setText("博学谷课程");
+                break;
+            case 1:
+                mExercisesBtn.setSelected(true);
+                iv_exercises.setImageResource(R.drawable.main_exercises_icon_selected);
+                tv_exercises.setTextColor(Color.parseColor("#0097F7"));
+                rl_title_bar.setVisibility(View.VISIBLE);
+                tv_main_title.setText("博学谷习题");
+                break;
+            case 2:
+                mMyInfoBtn.setSelected(true);
+                iv_myInfo.setImageResource(R.drawable.main_my_icon_selected);
+                tv_myInfo.setTextColor(Color.parseColor("#0097F7"));
+                rl_title_bar.setVisibility(View.GONE);
+        }
+    }
+    private void removeAllView(){
+        for (int i = 0;i<mBodyLayout.getChildCount();i++){
+            mBodyLayout.getChildAt(i).setVisibility(View.GONE);
+        }
+    }
 
-            @Override
-            public void onPageSelected(int position) {
-                if (ada.getSize()>0){
-                    vpi.setCurrentPosition(position%ada.getSize());
+    private void setInitStatus() {
+        clearBottomImageState();
+        setSelectedStatus(0);
+        createView(0);
+
+    }
+
+    private void selectDisplayView(int index) {
+        removeAllView();
+        createView(index);
+        setSelectedStatus(index);
+    }
+
+    private void createView(int viewIndex) {
+        switch (viewIndex){
+            case 0:
+                if (mCourseView == null){
+                    mCourseView = new CourseView(this);
+                    mBodyLayout.addView(mCourseView.getView());
+                }else{
+                    mCourseView.getView();
                 }
+                mCourseView.showView();
+                break;
+            case 1:
+                if (mExerciseView == null){
+                    mExerciseView = new ExerciseView(this);
+                    mBodyLayout.addView(mExerciseView.getView());
+                }else{
+                    mExerciseView.getView();
+                }
+                mExerciseView.showView();
+                break;
+            case 2:
+                if (mMyInfoView == null){
+                    mMyInfoView = new MyInfoView(this);
+                    mBodyLayout.addView(mMyInfoView.getView());
+                }else {
+                    mMyInfoView.getView();
+                }
+                mMyInfoView.showView();
+                break;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (data!=null){
+            boolean isLogin = data.getBooleanExtra("isLogin",false);
+            if (isLogin){
+                clearBottomImageState();
+                selectDisplayView(0);
             }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
+            if (mMyInfoView != null){
+                mMyInfoView.setLoginParams(isLogin);
             }
-        });
-        resetSize();
-        if (cadl != null){
-            vpi.setCount(cadl.size());
-            vpi.setCurrentPosition(0);
         }
-        ada.setDatas(cadl);
-
     }
 
-    private void resetSize() {
-        int sw = getScreenWith(mContext);
-        int adLheight = sw / 2;
-        ViewGroup.LayoutParams adlp = adBannerLay.getLayoutParams();
-        adlp.width = sw;
-        adlp.height = adLheight;
-        adBannerLay.setLayoutParams(adlp);
-    }
+    protected long exitTime;
 
-    public static int getScreenWith(Activity context){
-        DisplayMetrics metrics = new DisplayMetrics();
-        Display display = context.getWindowManager().getDefaultDisplay();
-        display.getMetrics(metrics);
-        return metrics.widthPixels;
-    }
-
-    private void initAdData() {
-        cadl = new ArrayList<CourseBean>();
-        for (int i = 0;i<3;i++){
-            CourseBean bean = new CourseBean();
-            bean.id=(i+1);
-            switch (i){
-                case 0:
-                    bean.icon="banner_1";
-                    break;
-                case 1:
-                    bean.icon="banner_2";
-                    break;
-                case 2:
-                    bean.icon="banner_3";
-                    break;
-                default:
-                    break;
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN){
+            if ((System.currentTimeMillis()-exitTime)>2000){
+                Toast.makeText(MainActivity.this,"再按一次退出博学谷",Toast.LENGTH_SHORT).show();
+                exitTime = System.currentTimeMillis();
+            }else{
+                MainActivity.this.finish();
+                if (readLoginStatus()){
+                    clearLoginStatus();
+                }
+                System.exit(0);
             }
-            cadl.add(bean);
+            return true;
         }
-    }
-
-    private void getCourseData(){
-        try {
-            InputStream is = mContext.getResources().getAssets().open("chaptertitle.xml");
-            cbl = AnalysisUtils.getCourseInfos(is);
-        } catch (Exception e) {
-            e.printStackTrace( );
-        }
+        return super.onKeyDown(keyCode, event);
 
     }
 
-    public View getView(){
-        if (mCurrentView==null){
-            createView();
-        }return mCurrentView;
+    private boolean readLoginStatus() {
+        SharedPreferences sp = getSharedPreferences("loginInfo", Context.MODE_PRIVATE);
+        boolean isLogin = sp.getBoolean("isLogin",false);
+        return isLogin;
     }
-    public void showView(){
-        if (mCurrentView==null){
-            createView();
-        }
-        mCurrentView.setVisibility(View.VISIBLE);
+
+    private void clearLoginStatus() {
+        SharedPreferences sp = getSharedPreferences("loginInfo",Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putBoolean("isLogin",false);
+        editor.putString("loginUserName","");
+        editor.commit();
     }
+
+
+
+
+
+
+
+
+
+
 
 }
