@@ -1,4 +1,4 @@
-package cn.edu.gdmec.android.boxuegu.view;
+package cn.edu.gdmec.android.testboxuegu.view;
 
 import android.app.Activity;
 import android.os.Handler;
@@ -17,11 +17,11 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.edu.gdmec.android.boxuegu.R;
-import cn.edu.gdmec.android.boxuegu.adapter.AdBannerAdapter;
-import cn.edu.gdmec.android.boxuegu.adapter.CourseAdapter;
-import cn.edu.gdmec.android.boxuegu.bean.CourseBean;
-import cn.edu.gdmec.android.boxuegu.utils.AnalysisUtils;
+import cn.edu.gdmec.android.testboxuegu.R;
+import cn.edu.gdmec.android.testboxuegu.adapter.AdBannerAdapter;
+import cn.edu.gdmec.android.testboxuegu.adapter.CourseAdapter;
+import cn.edu.gdmec.android.testboxuegu.bean.CourseBean;
+import cn.edu.gdmec.android.testboxuegu.utils.AnalysisUtils;
 
 /**
  * Created by student on 17/12/27.
