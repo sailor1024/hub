@@ -1,4 +1,4 @@
-package cn.edu.gdmec.android.boxuegu.activity;
+package cn.edu.gdmec.android.testboxuegu.activity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -13,10 +13,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import cn.edu.gdmec.android.boxuegu.R;
-import cn.edu.gdmec.android.boxuegu.bean.UserBean;
-import cn.edu.gdmec.android.boxuegu.utils.AnalysisUtils;
-import cn.edu.gdmec.android.boxuegu.utils.DBUtils;
+import cn.edu.gdmec.android.testboxuegu.R;
+import cn.edu.gdmec.android.testboxuegu.bean.UserBean;
+import cn.edu.gdmec.android.testboxuegu.utils.AnalysisUtils;
+import cn.edu.gdmec.android.testboxuegu.utils.DBUtils;
 
 public class UserInfoActivity extends AppCompatActivity implements View.OnClickListener{
 
@@ -32,7 +32,8 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
     private TextView tv_user_name;
     private TextView tv_sex;
     private TextView tv_signature;
-    private UserBean value;
+    private static final int CHANGE_NICKNAME = 1;
+    private static final int CHANGE_SIGNATURE = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,15 +95,16 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.tv_back:
-                this.finish();
-                break;
+            this.finish();
+            break;
             case R.id.rl_nickName:
                 String name = tv_nickName.getText().toString();
                 Bundle bdName = new Bundle();
                 bdName.putString("content",name);
                 bdName.putString("title","昵称");
                 bdName.putInt("flag",1);
-                enterActivityForResult(ChangeUserInfoActivity.class,CHANGE_NICKNAME,bdName);
+                enterActivityForResult(ChangeUserInfoActivity.class,
+                        CHANGE_NICKNAME,bdName);
                 break;
             case R.id.rl_sex:
                 String sex = tv_sex.getText().toString();
@@ -114,7 +116,8 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
                 bdSignature.putString("content",signature);
                 bdSignature.putString("title","签名");
                 bdSignature.putInt("flag",2);
-                enterActivityForResult(ChangeUserInfoActivity.class,CHANGE_SIGNATURE,bdSignature);
+                enterActivityForResult(ChangeUserInfoActivity.class,
+                        CHANGE_SIGNATURE,bdSignature);
                 break;
             default:
                 break;
