@@ -1,4 +1,4 @@
-package cn.edu.gdmec.android.boxuegu.activity;
+package cn.edu.gdmec.android.testboxuegu.activity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -25,11 +25,11 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.edu.gdmec.android.boxuegu.R;
-import cn.edu.gdmec.android.boxuegu.adapter.VideoListAdapter;
-import cn.edu.gdmec.android.boxuegu.bean.VideoBean;
-import cn.edu.gdmec.android.boxuegu.utils.AnalysisUtils;
-import cn.edu.gdmec.android.boxuegu.utils.DBUtils;
+import cn.edu.gdmec.android.testboxuegu.R;
+import cn.edu.gdmec.android.testboxuegu.adapter.VideoListAdapter;
+import cn.edu.gdmec.android.testboxuegu.bean.VideoBean;
+import cn.edu.gdmec.android.testboxuegu.utils.AnalysisUtils;
+import cn.edu.gdmec.android.testboxuegu.utils.DBUtils;
 
 public class VideoListActivity extends AppCompatActivity implements View.OnClickListener{
     private TextView tv_intro,tv_video,tv_chapter_intro;
@@ -191,8 +191,8 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
                 tv_intro.setTextColor(Color.parseColor("#000000"));
                 tv_video.setTextColor(Color.parseColor("#FFFFFF"));
                 break;
-            default:
-                break;
+                default:
+                    break;
         }
 
     }
