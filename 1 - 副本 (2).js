@@ -1,114 +1,108 @@
-package cn.edu.gdmec.android.testboxuegu.view;
-
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import cn.edu.gdmec.android.testboxuegu.R;
-import cn.edu.gdmec.android.testboxuegu.activity.LoginActivity;
-import cn.edu.gdmec.android.testboxuegu.activity.PlayHistoryActivity;
-import cn.edu.gdmec.android.testboxuegu.activity.SettingActivity;
-import cn.edu.gdmec.android.testboxuegu.activity.UserInfoActivity;
-import cn.edu.gdmec.android.testboxuegu.utils.AnalysisUtils;
-
-/**
- * Created by student on 17/12/27.
- */
-
-public class MyInfoView {
-    public ImageView iv_head_icon;
-    private LinearLayout ll_head;
-    private RelativeLayout rl_course_history,rl_setting;
-    private TextView tv_user_name;
-    private Activity mContext;
-    private LayoutInflater mInflater;
-    private View mCurrentView;
-    public MyInfoView(Activity context){
-        mContext= context;
-        mInflater= LayoutInflater.from(mContext);
-    }
-    private void createView(){
-        initView();
-    }
-
-    private void initView() {
-        mCurrentView = mInflater.inflate(R.layout.main_view_myinfo,null);
-        ll_head = (LinearLayout)mCurrentView.findViewById(R.id.ll_head);
-        iv_head_icon = (ImageView) mCurrentView.findViewById(R.id.iv_head_icon);
-        rl_course_history = (RelativeLayout) mCurrentView.findViewById(R.id.rl_course_history);
-        rl_setting = (RelativeLayout) mCurrentView.findViewById(R.id.rl_setting);
-        tv_user_name = (TextView) mCurrentView.findViewById(R.id.tv_user_name);
-        mCurrentView.setVisibility(View.VISIBLE);
-        setLoginParams(readLoginStatus());
-        ll_head.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (readLoginStatus()){
-                    Intent intent = new Intent(mContext, UserInfoActivity.class);
-                    mContext.startActivity(intent);
-                }else{
-                    Intent intent = new Intent(mContext, LoginActivity.class);
-                    mContext.startActivityForResult(intent,1);
-                }
-            }
-        });
-        rl_course_history.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (readLoginStatus()){
-                    Intent intent = new Intent(mContext, PlayHistoryActivity.class);
-                    mContext.startActivity(intent);
-                }else{
-                    Toast.makeText(mContext,"您还为登录，请先登录",Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-        rl_setting.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (readLoginStatus()){
-                    Intent intent = new Intent(mContext, SettingActivity.class);
-                    mContext.startActivityForResult(intent,1);
-                }else{
-                    Toast.makeText(mContext,"您还为登录，请先登录",Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-    }
-
-    public void setLoginParams(boolean isLogin){
-        if (isLogin){
-            tv_user_name.setText(AnalysisUtils.readLoginUserName(mContext));
-        }
-        else{
-            tv_user_name.setText("点击登录");
-        }
-    }
-    public View getView(){
-        if (mCurrentView==null){
-            createView();
-        }return mCurrentView;
-    }
-    public void showView(){
-        if (mCurrentView==null){
-            createView();
-        }
-        mCurrentView.setVisibility(View.VISIBLE);
-    }
-
-    private boolean readLoginStatus(){
-        SharedPreferences sp = mContext.getSharedPreferences("loginInfo", Context.MODE_PRIVATE);
-        boolean isLogin = sp.getBoolean("isLogin",false);
-        return isLogin;
-    }
-
-}
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white">
+    <LinearLayout
+        android:id="@+id/ll_head"
+        android:layout_width="fill_parent"
+        android:layout_height="240dp"
+        android:background="@drawable/myinfo_login_bg"
+        android:orientation="vertical">
+    <ImageView
+        android:id="@+id/iv_head_icon"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="75dp"
+        android:src="@drawable/default_icon"/>
+    <TextView
+        android:id="@+id/tv_user_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="10dp"
+        android:text="点击登录"
+        android:textColor="@android:color/white"
+        android:textSize="16sp" />
+    </LinearLayout>
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="20dp"
+        android:background="#E3E3E3"/>
+    <RelativeLayout
+        android:id="@+id/rl_course_history"
+        android:layout_width="fill_parent"
+        android:layout_height="50dp"
+        android:background="#F7F8F8"
+        android:gravity="center_vertical"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp">
+        <ImageView
+            android:id="@+id/iv_course_historyicon"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="25dp"
+            android:src="@drawable/course_history_icon"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="25dp"
+            android:layout_toRightOf="@+id/iv_course_historyicon"
+            android:text="播放记录"
+            android:textColor="#A3A3A3"
+            android:textSize="16sp" />
+        <ImageView
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="25dp"
+            android:src="@drawable/iv_right_arrow"/>
+    </RelativeLayout>
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="20dp"
+        android:background="#E3E3E3"/>
+    <RelativeLayout
+        android:id="@+id/rl_setting"
+        android:layout_width="fill_parent"
+        android:layout_height="50dp"
+        android:background="#F7F8F8"
+        android:gravity="center_vertical"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp">
+        <ImageView
+            android:id="@+id/iv_userinfo_icon"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="25dp"
+            android:src="@drawable/myinfo_setting_icon"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="25dp"
+            android:layout_toRightOf="@+id/iv_userinfo_icon"
+            android:text="设置"
+            android:textColor="#A3A3A3"
+            android:textSize="16sp" />
+        <ImageView
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="25dp"
+            android:src="@drawable/iv_right_arrow"/>
+    </RelativeLayout>
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:background="#E3E3E3"/>
+</LinearLayout>
