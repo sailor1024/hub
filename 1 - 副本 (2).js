@@ -1,119 +1,232 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@android:color/white"
-    >
-    <LinearLayout
-        android:id="@+id/ll_head"
-        android:background="@drawable/myinfo_login_bg"
-        android:orientation="vertical"
-        android:layout_width="fill_parent"
-        android:layout_height="240dp">
-        <ImageView
-            android:id="@+id/iv_head_icon"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
-            android:src="@drawable/default_icon"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="75dp"/>
-        <TextView
-            android:id="@+id/tv_user_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="10dp"
-            android:text="点击登录"
-            android:textColor="@android:color/white"
-            android:textSize="16sp"/>
+public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
-    </LinearLayout>
-    <View
-        android:layout_width="fill_parent"
-        android:layout_height="1dp"
-        android:background="#E3E3E3"
-        android:layout_marginTop="20dp"
-        />
+    private ExerciseView mExerciseView;
+    private CourseView mCourseView;
+    private MyInfoView mMyInfoView;
+    private FrameLayout mBodyLayout;
+    private LinearLayout mBottomLayout;
 
-    <RelativeLayout
-        android:id="@+id/rl_course_history"
-        android:background="#F7F8F8"
-        android:gravity="center_vertical"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_width="fill_parent"
-        android:layout_height="50dp">
-        <ImageView
-            android:id="@+id/iv_course_historyicon"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_marginLeft="25dp"
-            android:src="@drawable/course_history_icon"
-            android:layout_centerVertical="true"/>
+    private View mCourseBtn;
+    private View mExercisesBtn;
+    private View mMyInfoBtn;
+    private TextView tv_course;
+    private TextView tv_exercises;
+    private TextView tv_myInfo;
+    private ImageView iv_course;
+    private ImageView iv_exercises;
+    private ImageView iv_myInfo;
+    private TextView tv_back;
+    private TextView tv_main_title;
+    private RelativeLayout rl_title_bar;
 
-        <TextView
-            android:id="@+id/tv_course_history"
-            android:textSize="16sp"
-            android:layout_marginLeft="25dp"
-            android:layout_centerVertical="true"
-            android:layout_toRightOf="@+id/iv_course_historyicon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="#A3A3A3"
-            android:text="播放记录"
-            />
-        <ImageView
-            android:src="@drawable/iv_right_arrow"
-            android:layout_marginRight="25dp"
-            android:layout_centerVertical="true"
-            android:layout_alignParentRight="true"
-            android:layout_width="15dp"
-            android:layout_height="15dp" />
-    </RelativeLayout>
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        init();
+        initBottomBar();
+        setListener();
+        setInitStatus();
+    }
+    private void init() {
+     tv_back = (TextView)findViewById(R.id.tv_back);
+        tv_main_title = (TextView) findViewById(R.id.tv_main_title);
+        tv_main_title.setText("博学谷课程");
+        rl_title_bar = (RelativeLayout)findViewById(R.id.title_bar);
+        rl_title_bar.setBackgroundColor(Color.parseColor("#30B4FF"));
+        tv_back.setVisibility(View.GONE);
+        initBodyLayout();
+    }
+    private void initBottomBar() {
+        mBottomLayout = (LinearLayout) findViewById(R.id.main_bottom_bar);
+        mCourseBtn=findViewById(R.id.bottom_bar_course_btn);
+        mExercisesBtn= findViewById(R.id.bottom_bar_exercises_btn);
+        mMyInfoBtn = findViewById(R.id.bottom_bar_myinfo_btn);
+        tv_course=(TextView)findViewById(R.id.bottom_bar_text_course);
+        tv_exercises=(TextView)findViewById(R.id.bottom_bar_text_exercises);
+        tv_myInfo = (TextView)findViewById(R.id.bottom_bar_text_myinfo);
+        iv_course =(ImageView)findViewById(R.id.bottom_bar_image_course);
+        iv_exercises= (ImageView)findViewById(R.id.bottom_bar_image_exercises);
+        iv_myInfo= (ImageView)findViewById(R.id.bottom_bar_image_myinfo);
 
-    <View
-        android:layout_width="fill_parent"
-        android:layout_height="1dp"
-        android:background="#E3E3E3"
-        />
+    }
+    private void initBodyLayout() {
+        mBodyLayout = (FrameLayout) findViewById(R.id.main_body);
+    }
 
-    <RelativeLayout
-        android:id="@+id/rl_setting"
-        android:background="#F7F8F8"
-        android:gravity="center_vertical"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_width="fill_parent"
-        android:layout_height="50dp">
-        <ImageView
-            android:id="@+id/iv_userinfo_icon"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_marginLeft="25dp"
-            android:src="@drawable/myinfo_setting_icon"
-            android:layout_centerVertical="true"/>
+    @Override
+    public void onClick(View v){
+        switch (v.getId()){
+            case R.id.bottom_bar_course_btn:
+                clearBottomImageState();
+                selectDisplayView(0);
+                break;
+            case R.id.bottom_bar_exercises_btn:
+                clearBottomImageState();
+                selectDisplayView(1);
+                break;
+            case R.id.bottom_bar_myinfo_btn:
+                clearBottomImageState();
+                selectDisplayView(2);
+                if (mMyInfoView != null){
+                    mMyInfoView.setLoginParams(readLoginStatus());
+                }
+                break;
+            default:
+                break;
+        }
+    }
+    private void setListener() {
+        for (int i = 0; i < mBottomLayout.getChildCount();i++){
+            mBottomLayout.getChildAt(i).setOnClickListener(this);
+        }
+    }
 
-        <TextView
-            android:textSize="16sp"
-            android:layout_marginLeft="25dp"
-            android:layout_centerVertical="true"
-            android:layout_toRightOf="@+id/iv_userinfo_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="#A3A3A3"
-            android:text="设置"
-            />
-        <ImageView
-            android:src="@drawable/iv_right_arrow"
-            android:layout_marginRight="25dp"
-            android:layout_centerVertical="true"
-            android:layout_alignParentRight="true"
-            android:layout_width="15dp"
-            android:layout_height="15dp" />
-    </RelativeLayout>
-    <View
-        android:layout_width="fill_parent"
-        android:layout_height="1dp"
-        android:background="#E3E3E3"
-        />
-</LinearLayout>
+    private void clearBottomImageState() {
+        tv_course.setTextColor(Color.parseColor("#666666"));
+        tv_exercises.setTextColor(Color.parseColor("#666666"));
+        tv_myInfo.setTextColor(Color.parseColor("#666666"));
+        iv_course.setImageResource(R.drawable.main_course_icon);
+        iv_exercises.setImageResource(R.drawable.main_exercises_icon);
+        iv_myInfo.setImageResource(R.drawable.main_my_icon);
+        for (int i=0;i<mBottomLayout.getChildCount();i++){
+            mBottomLayout.getChildAt(i).setSelected(false);
+        }
+    }
+
+    public void setSelectedStatus(int index){
+        switch (index){
+            case 0:
+                mCourseBtn.setSelected(true);
+                iv_course.setImageResource(R.drawable.main_course_icon_selected);
+                tv_course.setTextColor(Color.parseColor("#0097F7"));
+                rl_title_bar.setVisibility(View.VISIBLE);
+                tv_main_title.setText("博学谷课程");
+                break;
+            case 1:
+                mExercisesBtn.setSelected(true);
+                iv_exercises.setImageResource(R.drawable.main_exercises_icon_selected);
+                tv_exercises.setTextColor(Color.parseColor("#0097F7"));
+                rl_title_bar.setVisibility(View.VISIBLE);
+                tv_main_title.setText("博学谷习题");
+                break;
+            case 2:
+                mMyInfoBtn.setSelected(true);
+                iv_myInfo.setImageResource(R.drawable.main_my_icon_selected);
+                tv_myInfo.setTextColor(Color.parseColor("#0097F7"));
+                rl_title_bar.setVisibility(View.GONE);
+        }
+    }
+    private void removeAllView(){
+        for (int i = 0;i<mBodyLayout.getChildCount();i++){
+            mBodyLayout.getChildAt(i).setVisibility(View.GONE);
+        }
+    }
+
+    private void setInitStatus() {
+        clearBottomImageState();
+        setSelectedStatus(0);
+        createView(0);
+
+    }
+
+    private void selectDisplayView(int index) {
+        removeAllView();
+        createView(index);
+        setSelectedStatus(index);
+    }
+
+    private void createView(int viewIndex) {
+        switch (viewIndex){
+            case 0:
+                if (mCourseView == null){
+                    mCourseView = new CourseView(this);
+                    mBodyLayout.addView(mCourseView.getView());
+                }else{
+                    mCourseView.getView();
+                }
+                mCourseView.showView();
+                break;
+            case 1:
+                if (mExerciseView == null){
+                    mExerciseView = new ExerciseView(this);
+                    mBodyLayout.addView(mExerciseView.getView());
+                }else{
+                    mExerciseView.getView();
+                }
+                mExerciseView.showView();
+                break;
+            case 2:
+                if (mMyInfoView == null){
+                    mMyInfoView = new MyInfoView(this);
+                    mBodyLayout.addView(mMyInfoView.getView());
+                }else {
+                    mMyInfoView.getView();
+                }
+                mMyInfoView.showView();
+                break;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (data!=null){
+            boolean isLogin = data.getBooleanExtra("isLogin",false);
+            if (isLogin){
+                clearBottomImageState();
+                selectDisplayView(0);
+            }
+            if (mMyInfoView != null){
+                mMyInfoView.setLoginParams(isLogin);
+            }
+        }
+    }
+
+    protected long exitTime;
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN){
+            if ((System.currentTimeMillis()-exitTime)>2000){
+                Toast.makeText(MainActivity.this,"再按一次退出博学谷",Toast.LENGTH_SHORT).show();
+                exitTime = System.currentTimeMillis();
+            }else{
+                MainActivity.this.finish();
+                if (readLoginStatus()){
+                    clearLoginStatus();
+                }
+                System.exit(0);
+            }
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+
+    }
+
+    private boolean readLoginStatus() {
+        SharedPreferences sp = getSharedPreferences("loginInfo", Context.MODE_PRIVATE);
+        boolean isLogin = sp.getBoolean("isLogin",false);
+        return isLogin;
+    }
+
+    private void clearLoginStatus() {
+        SharedPreferences sp = getSharedPreferences("loginInfo",Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putBoolean("isLogin",false);
+        editor.putString("loginUserName","");
+        editor.commit();
+    }
+
+
+
+
+
+
+
+
+
+
+
+}
