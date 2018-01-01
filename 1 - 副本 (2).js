@@ -1,4 +1,4 @@
-package cn.edu.gdmec.android.boxuegu.view;
+package cn.edu.gdmec.android.testboxuegu.view;
 
 import android.app.Activity;
 import android.content.Context;
@@ -12,15 +12,15 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import cn.edu.gdmec.android.boxuegu.R;
-import cn.edu.gdmec.android.boxuegu.activity.LoginActivity;
-import cn.edu.gdmec.android.boxuegu.activity.PlayHistoryActivity;
-import cn.edu.gdmec.android.boxuegu.activity.SettingActivity;
-import cn.edu.gdmec.android.boxuegu.activity.UserInfoActivity;
-import cn.edu.gdmec.android.boxuegu.utils.AnalysisUtils;
+import cn.edu.gdmec.android.testboxuegu.R;
+import cn.edu.gdmec.android.testboxuegu.activity.LoginActivity;
+import cn.edu.gdmec.android.testboxuegu.activity.PlayHistoryActivity;
+import cn.edu.gdmec.android.testboxuegu.activity.SettingActivity;
+import cn.edu.gdmec.android.testboxuegu.activity.UserInfoActivity;
+import cn.edu.gdmec.android.testboxuegu.utils.AnalysisUtils;
 
 /**
- * Created by student on 17/12/28.
+ * Created by student on 17/12/27.
  */
 
 public class MyInfoView {
